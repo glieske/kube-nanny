@@ -15,7 +15,6 @@ builds:
       - CGO_ENABLED=0
     goos:
       - linux
-      - windows
       - darwin
     goarch:
       - amd64
@@ -45,9 +44,8 @@ changelog:
 
 kos:
   - id: kube-nanny
-    main: ./...
+    main: ./
     working_dir: .
-    base_image: alpine:3.19
     labels:
       org.opencontainers.image.source: "https://github.com/glieske/kube-nanny"
     repository: ghcr.io/glieske/kube-nanny
