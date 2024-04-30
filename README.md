@@ -1,0 +1,2 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/glieske/kube-nanny)](https://goreportcard.com/report/github.com/glieske/kube-nanny)
+![GitHub release](https://img.shields.io/github/release/glieske/kube-nanny.svg)
