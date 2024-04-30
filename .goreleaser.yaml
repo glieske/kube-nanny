@@ -17,6 +17,9 @@ builds:
       - linux
       - windows
       - darwin
+    goarch:
+      - amd64
+      - arm64
 
 archives:
   - format: tar.gz
@@ -39,3 +42,23 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
+
+kos:
+  - id: kube-nanny
+    main: ./...
+    working_dir: .
+    base_image: alpine:3.19
+    labels:
+      org.opencontainers.image.source: "https://github.com/glieske/kube-nanny"
+    repository: ghcr.io/glieske/kube-nanny
+    platforms:
+      - linux/amd64
+      - linux/arm64
+    tags:
+      - latest
+      - '{{.Tag}}'
+      - '{{if not .Prerelease}}stable{{end}}'
+    creation_time: '{{.CommitTimestamp}}'
+    ko_data_creation_time: '{{.CommitTimestamp}}'
+    bare: true
+    preserve_import_paths: false
