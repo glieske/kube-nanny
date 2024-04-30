@@ -1,0 +1,12 @@
+name: "GoReportCardUpdate"
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Update Report Card
+      uses: creekorful/goreportcard-action@v1.0
