@@ -1,0 +1,7 @@
+apiVersion: nanny.letscode.cloud/v1alpha1
+kind: SleepConfiguration
+metadata:
+    name: sleepconfig
+    namespace: myapp1
+spec:
+    scalingUpConfigs:

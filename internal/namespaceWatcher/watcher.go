@@ -7,6 +7,7 @@ import (
 	"k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
+	"time"
 )
 
 func Watcher(ctx context.Context, kcs *kubernetes.Clientset, rcfg *dto.RunningConfig) {
@@ -22,13 +23,14 @@ func Watcher(ctx context.Context, kcs *kubernetes.Clientset, rcfg *dto.RunningCo
 
 		}
 		log.Debug("Watcher loop ends...")
+		time.Sleep(time.Duration(rcfg.WatcherConfig.LoopDelay) * time.Second)
 	}
 }
 
 func getNamespaces(kcs *kubernetes.Clientset) *v1.NamespaceList {
 	log.Debug("Getting namespaces...")
 	namespaces, err := kcs.CoreV1().Namespaces().List(context.Background(), metav1.ListOptions{
-		LabelSelector: "nanny.kubernetes.io/watch=true",
+		LabelSelector: "nanny.letscode.cloud/watch=true",
 	})
 	if err != nil {
 		log.Fatal(err)

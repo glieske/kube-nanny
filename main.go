@@ -2,13 +2,14 @@ package main
 
 import (
 	"context"
-	"flag"
+	"github.com/glieske/kube-nanny/internal/core/env"
 	"github.com/glieske/kube-nanny/internal/core/initLoader"
 	"github.com/glieske/kube-nanny/internal/core/preInitLoader"
 	"github.com/glieske/kube-nanny/internal/dto"
 	"github.com/glieske/kube-nanny/internal/namespaceWatcher"
 	"github.com/glieske/kube-nanny/internal/provider"
 	log "github.com/sirupsen/logrus"
+	"net/http"
 )
 
 func main() {
@@ -22,14 +23,29 @@ func main() {
 	kcs := provider.GetKubernetesClientSet()
 	runningConfig := provider.GetRunningConfigFromConfigMap(ctx, kcs)
 
-	namespaceWatcher.Watcher(ctx, kcs, runningConfig)
+	go namespaceWatcher.Watcher(ctx, kcs, runningConfig)
 
-	select {}
+	runHealthCheckSrv()
 }
 
 func parseConfig() *dto.MainConfig {
 	cfg := &dto.MainConfig{}
-	cfg.LoggingLevel = flag.String("v", "info", "Log level: debug, info, warn, error, fatal, panic")
+	logLevel := env.GetEnv("LOG_LEVEL", "info")
+	cfg.LoggingLevel = &logLevel
 
 	return cfg
+}
+
+func runHealthCheckSrv() {
+	log.Debug("Starting health check server...")
+	http.Handle("/healthz", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		if _, e := w.Write([]byte("ok")); e != nil {
+			log.Fatal(e)
+		}
+	}))
+	err := http.ListenAndServe(":8080", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
 }

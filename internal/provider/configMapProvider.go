@@ -7,6 +7,7 @@ import (
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
+	"strconv"
 )
 
 func GetRunningConfigFromConfigMap(ctx context.Context, kcs *kubernetes.Clientset) *dto.RunningConfig {
@@ -21,7 +22,14 @@ func GetRunningConfigFromConfigMap(ctx context.Context, kcs *kubernetes.Clientse
 
 func parseConfigMapData(cm *v1.ConfigMap) *dto.RunningConfig {
 	log.Debug("Parsing ConfigMap data...")
-	cfg := dto.RunningConfig{}
+	cfg := dto.NewRunningConfig()
+	if cm.Data["watcher.loopDelaySeconds"] != "" {
+		delay, err := strconv.ParseInt(cm.Data["watcher.loopDelaySeconds"], 10, 64)
+		if err != nil {
+			log.Fatal(err)
+		}
+		cfg.WatcherConfig.LoopDelay = delay
+	}
 
-	return &cfg
+	return cfg
 }
